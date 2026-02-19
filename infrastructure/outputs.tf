@@ -32,3 +32,8 @@ output "vpc_id" {
   description = "ID of the VPC"
   value       = module.networking.vpc_id
 }
+
+output "jenkins_agents_asg_name" {
+  description = "Name of the Jenkins agents Auto Scaling Group"
+  value       = module.jenkins-agent-spot-compute.autoscaling_group_name
+}

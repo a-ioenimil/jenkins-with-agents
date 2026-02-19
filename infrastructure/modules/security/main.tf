@@ -151,13 +151,53 @@ resource "aws_iam_role_policy" "jenkins_ec2_describe_policy" {
       {
         Effect = "Allow"
         Action = [
+          "ec2:DescribeSpotFleetInstances",
+          "ec2:ModifySpotFleetRequest",
+          "ec2:CreateTags",
+          "ec2:DescribeRegions",
           "ec2:DescribeInstances",
-          "ec2:DescribeTags",
+          "ec2:DescribeInstanceStatus",
+          "ec2:DescribeSpotFleetRequests",
+          "ec2:DescribeFleets",
+          "ec2:DescribeFleetInstances",
+          "ec2:ModifyFleet",
+          "ec2:DescribeInstanceTypes",
           "ec2:TerminateInstances",
+          "ec2:DescribeTags"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
           "autoscaling:DescribeAutoScalingGroups",
+          "autoscaling:TerminateInstanceInAutoScalingGroup",
           "autoscaling:UpdateAutoScalingGroup"
         ]
         Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "iam:ListInstanceProfiles",
+          "iam:ListRoles"
+        ]
+        Resource = ["*"]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "iam:PassRole"
+        ]
+        Resource = ["*"]
+        Condition = {
+          StringEquals = {
+            "iam:PassedToService" = [
+              "ec2.amazonaws.com",
+              "ec2.amazonaws.com.cn"
+            ]
+          }
+        }
       }
     ]
   })

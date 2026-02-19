@@ -1,0 +1,11 @@
+[project]
+name = "hyper-scale-core-async-engine"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi[standard]>=0.129.0",
+]
+
+

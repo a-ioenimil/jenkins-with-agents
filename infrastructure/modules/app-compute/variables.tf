@@ -18,11 +18,6 @@ variable "key_pair_name" {
   type        = string
 }
 
-variable "instance_profile_name" {
-  description = "IAM Instance Profile Name"
-  type        = string
-}
-
 variable "environment" {
   description = "Deployment environment"
   type        = string

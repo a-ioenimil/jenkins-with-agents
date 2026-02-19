@@ -1,52 +1,39 @@
 #!/bin/bash
+set -euo pipefail
 
-set -e
+# 1. Update all system packages
+yum update -y
 
-wait_for_internet() {
-  echo "Waiting for internet connectivity..."
-  until nc -z -v -w5 google.com 443 &> /dev/null; do
-    echo "Network is unreachable. Retrying in 5 seconds..."
-    sleep 5
-  done
-  echo "Internet connection established!"
-}
+# 2. Install Java 17 (Corretto first as preferred)
+yum install java-17-amazon-corretto -y
 
-wait_for_internet
+# 3. Install Jenkins LTS
+rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+yum install jenkins -y
 
-export DEBIAN_FRONTEND=noninteractive
+# 4. Install Docker
+yum install docker -y
+systemctl enable docker
+systemctl start docker
+usermod -aG docker jenkins
+usermod -aG docker ec2-user
 
-apt-get update
-apt-get install -y debconf-utils unattended-upgrades fail2ban curl unzip
-echo "unattended-upgrades unattended-upgrades/enable_auto_updates boolean true" | debconf-set-selections
-dpkg-reconfigure -f noninteractive unattended-upgrades
-
-curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh
-usermod -aG docker ubuntu
-
+# 5. Install AWS CLI v2
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 ./aws/install
+aws --version
 
+# 6. Install git
+yum install git -y
 
-docker volume create jenkins_home
-docker run -d \
-  --name jenkins \
-  --restart always \
-  -p 8080:8080 \
-  -p 50000:50000 \
-  -v jenkins_home:/var/jenkins_home \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  jenkins/jenkins:lts-jdk17
+# 7. Enable and start Jenkins
+systemctl enable jenkins
+systemctl start jenkins
 
-echo "Waiting for Jenkins to generate admin password..."
-while ! docker exec jenkins test -f /var/jenkins_home/secrets/initialAdminPassword; do
-  sleep 2
-done
-
-echo "---------------------------------------------------"
-echo "Jenkins Initial Admin Password:"
-docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
-echo -e "\n---------------------------------------------------"
-
-echo "Jenkins setup complete."
+# 8. Log the initial admin password location
+echo "Jenkins initial password at: /var/lib/jenkins/secrets/initialAdminPassword"
+# Wait for the file to exist (simple wait loop, though systemctl start usually blocks until ready)
+while [ ! -f /var/lib/jenkins/secrets/initialAdminPassword ]; do sleep 2; done
+cat /var/lib/jenkins/secrets/initialAdminPassword > /var/log/jenkins-init.log

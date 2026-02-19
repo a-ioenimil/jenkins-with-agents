@@ -13,26 +13,25 @@ data "aws_ami" "amazon_linux_2" {
   }
 }
 
-resource "aws_instance" "jenkins_controller" {
+resource "aws_instance" "app_host" {
   ami                         = data.aws_ami.amazon_linux_2.id
   instance_type               = var.instance_type
   subnet_id                   = var.subnet_id
-  associate_public_ip_address = true
+  associate_public_ip_address = false
   vpc_security_group_ids      = [var.security_group_id]
   key_name                    = var.key_pair_name
-  iam_instance_profile        = var.instance_profile_name
   user_data                   = file("${path.module}/user_data.sh")
-  user_data_replace_on_change = true
+
   root_block_device {
     volume_type = "gp3"
-    volume_size = 30
+    volume_size = 20
     encrypted   = true
   }
 
   tags = {
-    Name        = "${var.project_name}-${var.environment}-jenkins-controller"
+    Name        = "${var.project_name}-${var.environment}-app-host"
     Environment = var.environment
     Project     = var.project_name
-    Role        = "jenkins-controller"
+    Role        = "app-host"
   }
 }

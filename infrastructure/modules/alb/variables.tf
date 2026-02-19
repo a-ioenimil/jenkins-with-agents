@@ -1,24 +1,29 @@
-variable "project_name" {
-  description = "Project name"
-  type        = string
-}
-
 variable "vpc_id" {
-  description = "VPC ID"
+  description = "The ID of the VPC"
   type        = string
 }
 
-variable "alb_security_group_id" {
-  description = "Security Group ID for the ALB"
-  type        = string
-}
-
-variable "public_subnets" {
-  description = "List of public subnet IDs for the ALB"
+variable "public_subnet_ids" {
+  description = "List of public subnet IDs"
   type        = list(string)
 }
 
-variable "target_instance_id" {
-  description = "EC2 instance ID to attach to the target group"
+variable "alb_sg_id" {
+  description = "ID of the ALB Security Group"
+  type        = string
+}
+
+variable "app_instance_id" {
+  description = "ID of the application instance"
+  type        = string
+}
+
+variable "environment" {
+  description = "Deployment environment"
+  type        = string
+}
+
+variable "project_name" {
+  description = "Project name"
   type        = string
 }

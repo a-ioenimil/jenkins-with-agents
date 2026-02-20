@@ -17,6 +17,11 @@ resource "aws_launch_template" "jenkins_agent" {
   name_prefix   = "${var.project_name}-${var.environment}-jenkins-agent-"
   image_id      = data.aws_ami.amazon_linux_2.id
   instance_type = "t3.medium"
+  
+  lifecycle {
+    create_before_destroy = true
+  }
+  
 
 
 
@@ -70,6 +75,19 @@ resource "aws_autoscaling_group" "jenkins_agents" {
   launch_template {
     id      = aws_launch_template.jenkins_agent.id
     version = "$Latest"
+  }
+
+  instance_refresh {
+    strategy = "Rolling" # Replaces instances one by one (or in batches)
+    
+    preferences {
+      # Keeps at least 50% of your desired capacity alive during the refresh
+      min_healthy_percentage = 0
+    }
+    
+    # Optional: Explicitly tell it to trigger on launch template changes.
+    # Usually implicit when version = "$Latest", but good for clarity.
+    triggers = ["tag"] 
   }
 
   # Tag for Jenkins EC2 plugin discovery

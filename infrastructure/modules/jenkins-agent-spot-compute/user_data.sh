@@ -56,3 +56,5 @@ docker exec jenkins-agent bash -c "\
   unzip -q /tmp/awscliv2.zip -d /tmp && \
   /tmp/aws/install && \
   rm -rf /tmp/aws /tmp/awscliv2.zip"
+
+echo "Jenkins agent setup complete. SSH on port 2222 with the provided key."

@@ -81,7 +81,6 @@ resource "aws_autoscaling_group" "jenkins_agents" {
     strategy = "Rolling" # Replaces instances one by one (or in batches)
     
     preferences {
-      # Keeps at least 50% of your desired capacity alive during the refresh
       min_healthy_percentage = 0
     }
     

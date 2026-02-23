@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        label 'spot-agents' // Assuming the EC2 Fleet plugin connects nodes with 'agent' label
+        label 'spot-agents'
     }
 
     environment {
@@ -13,6 +13,12 @@ pipeline {
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
         stage('Install & Test') {
             steps {
                 dir('backend') {

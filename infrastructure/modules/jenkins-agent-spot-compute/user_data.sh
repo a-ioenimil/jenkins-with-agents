@@ -59,4 +59,7 @@ docker exec jenkins-agent bash -c "\
   /tmp/aws/install && \
   rm -rf /tmp/aws /tmp/awscliv2.zip"
 
+# Signal that the agent is fully provisioned and ready for jobs
+docker exec jenkins-agent touch /home/jenkins/.agent-ready
+
 echo "Jenkins agent setup complete. SSH on port 2222 with the provided key."

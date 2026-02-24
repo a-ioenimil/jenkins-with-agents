@@ -23,6 +23,14 @@ pipeline {
             steps {
                 dir('backend') {
                     sh '''
+                    # Download and install uv to the jenkins user's home directory
+                    curl -LsSf https://astral.sh/uv/install.sh | sh
+                    
+                    # Add uv to the current shell's PATH
+                    export PATH="$USERPROFILE/.local/bin:$PATH"
+                    export PATH="/home/jenkins/.local/bin:$PATH"
+                    export PATH="/root/.local/bin:$PATH"
+                    
                     uv sync
                     uv run pytest --cov=src tests/
                     '''

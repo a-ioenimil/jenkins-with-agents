@@ -31,6 +31,7 @@ docker run -d \
   --restart=on-failure \
   -p 2222:22 \
   -v /var/run/docker.sock:/var/run/docker.sock \
+  --group-add $DOCKER_GID \
   -e "JENKINS_AGENT_SSH_PUBKEY=${ssh_public_key}" \
   jenkins/ssh-agent:latest
 
@@ -45,10 +46,6 @@ docker exec jenkins-agent bash -c "\
   rm -f /tmp/docker.tgz && \
   chmod +x /usr/local/bin/docker"
 
-# Grant jenkins user access to the mounted Docker socket
-docker exec jenkins-agent bash -c "\
-  groupadd -g $DOCKER_GID docker-host 2>/dev/null || true && \
-  usermod -aG docker-host jenkins"
 
 # Install AWS CLI v2 inside the container (needed for ECR push/pull)
 docker exec jenkins-agent bash -c "\

@@ -25,26 +25,31 @@ yum install git -y
 # Get Docker socket GID for permission mapping
 DOCKER_GID=$(getent group docker | cut -d: -f3)
 
+# Give all users access to the Docker socket
+chmod 666 /var/run/docker.sock
+
 # Run Jenkins SSH Agent with Docker socket mounted (Docker-outside-of-Docker)
 docker run -d \
   --name jenkins-agent \
   --restart=on-failure \
   -p 2222:22 \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  --group-add $DOCKER_GID \
   -e "JENKINS_AGENT_SSH_PUBKEY=${ssh_public_key}" \
   jenkins/ssh-agent:latest
 
 # Wait for the container to fully initialize
-sleep 5
+sleep 10
 
-# Install Docker CLI (static binary) inside the container
+# Install Docker CLI and plugins (buildx, compose) via official apt repository
 docker exec jenkins-agent bash -c "\
-  apt-get update && apt-get install -y curl unzip && \
-  curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-27.5.1.tgz -o /tmp/docker.tgz && \
-  tar xzf /tmp/docker.tgz --strip-components=1 -C /usr/local/bin docker/docker && \
-  rm -f /tmp/docker.tgz && \
-  chmod +x /usr/local/bin/docker"
+  for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do apt-get remove -y \$pkg; done && \
+  apt-get update && apt-get install -y ca-certificates curl gnupg && \
+  install -m 0755 -d /etc/apt/keyrings && \
+  curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
+  chmod a+r /etc/apt/keyrings/docker.gpg && \
+  echo \"deb [arch=\$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \$(. /etc/os-release && echo \"\$VERSION_CODENAME\") stable\" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+  apt-get update && \
+  apt-get install -y docker-ce-cli docker-buildx-plugin docker-compose-plugin"
 
 
 # Install AWS CLI v2 inside the container (needed for ECR push/pull)

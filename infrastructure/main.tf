@@ -57,12 +57,13 @@ module "jenkins-agent-spot-compute" {
 module "app-compute" {
   source = "./modules/app-compute"
 
-  instance_type     = var.app_instance_type
-  subnet_id         = module.networking.private_subnet_ids[0]
-  security_group_id = module.security.app_sg_id
-  key_pair_name     = aws_key_pair.auth.key_name
-  environment       = var.environment
-  project_name      = var.project_name
+  instance_type         = var.app_instance_type
+  subnet_id             = module.networking.private_subnet_ids[0]
+  security_group_id     = module.security.app_sg_id
+  key_pair_name         = aws_key_pair.auth.key_name
+  instance_profile_name = module.security.app_host_instance_profile_name
+  environment           = var.environment
+  project_name          = var.project_name
 }
 
 module "alb" {

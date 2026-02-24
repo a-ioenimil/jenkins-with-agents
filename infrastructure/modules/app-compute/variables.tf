@@ -27,3 +27,8 @@ variable "project_name" {
   description = "Project name"
   type        = string
 }
+
+variable "instance_profile_name" {
+  description = "IAM Instance Profile name for the App Host"
+  type        = string
+}

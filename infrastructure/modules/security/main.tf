@@ -213,3 +213,45 @@ resource "aws_iam_instance_profile" "jenkins_instance_profile" {
     Project     = var.project_name
   }
 }
+
+# -------------------------------------------------------
+# App Host IAM Role (ECR read-only for pulling images)
+# -------------------------------------------------------
+resource "aws_iam_role" "app_host_role" {
+  name = "${var.project_name}-${var.environment}-app-host-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+
+  tags = {
+    Name        = "${var.project_name}-${var.environment}-app-host-role"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "app_host_ecr_read" {
+  role       = aws_iam_role.app_host_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
+resource "aws_iam_instance_profile" "app_host_instance_profile" {
+  name = "${var.project_name}-${var.environment}-app-host-profile"
+  role = aws_iam_role.app_host_role.name
+
+  tags = {
+    Name        = "${var.project_name}-${var.environment}-app-host-instance-profile"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}

@@ -1,5 +1,6 @@
 #!/bin/bash
 set -euo pipefail
+export PATH=$PATH:/usr/local/bin:/usr/bin
 
 # Read arguments
 ECR_REGISTRY=$1

@@ -20,6 +20,7 @@ resource "aws_instance" "app_host" {
   associate_public_ip_address = false
   vpc_security_group_ids      = [var.security_group_id]
   key_name                    = var.key_pair_name
+  iam_instance_profile        = var.instance_profile_name
   user_data                   = file("${path.module}/user_data.sh")
 
   root_block_device {

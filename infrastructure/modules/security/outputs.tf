@@ -22,3 +22,8 @@ output "jenkins_instance_profile_name" {
   description = "Name of the Jenkins Instance Profile"
   value       = aws_iam_instance_profile.jenkins_instance_profile.name
 }
+
+output "app_host_instance_profile_name" {
+  description = "Name of the App Host Instance Profile"
+  value       = aws_iam_instance_profile.app_host_instance_profile.name
+}

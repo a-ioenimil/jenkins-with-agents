@@ -83,3 +83,47 @@ resource "aws_ecr_repository_policy" "jenkins_access" {
   # Note: ecr:GetAuthorizationToken must be granted on the account level ("*") 
   # via an IAM policy attached to the role, not here in the repository policy.
 }
+
+# -------------------------------------------------------
+# Jenkins SSH Agent Custom Image Repository
+# -------------------------------------------------------
+resource "aws_ecr_repository" "jenkins_agent_repo" {
+  name                 = "jenkins-ssh-agent-custom"
+  image_tag_mutability = "MUTABLE"
+
+  encryption_configuration {
+    encryption_type = "AES256"
+  }
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  tags = {
+    Name        = "jenkins-ssh-agent-custom"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+resource "aws_ecr_lifecycle_policy" "agent_cleanup_policy" {
+  repository = aws_ecr_repository.jenkins_agent_repo.name
+
+  policy = jsonencode({
+    rules = [
+      {
+        rulePriority = 1
+        description  = "Expire untagged images older than 7 days"
+        selection = {
+          tagStatus   = "untagged"
+          countType   = "sinceImagePushed"
+          countUnit   = "days"
+          countNumber = 7
+        }
+        action = {
+          type = "expire"
+        }
+      }
+    ]
+  })
+}

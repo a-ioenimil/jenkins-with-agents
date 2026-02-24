@@ -21,32 +21,8 @@ pipeline {
 
         stage('Install & Test') {
             steps {
-                // Wait for user_data.sh to finish provisioning the agent container
-                sh '''
-                echo "Waiting for agent provisioning to complete..."
-                for i in $(seq 1 60); do
-                    if [ -f /home/jenkins/.agent-ready ]; then
-                        echo "Agent is ready!"
-                        break
-                    fi
-                    echo "Still waiting... ($i/60)"
-                    sleep 5
-                done
-
-                if [ ! -f /home/jenkins/.agent-ready ]; then
-                    echo "ERROR: Agent provisioning did not complete in time!"
-                    exit 1
-                fi
-                '''
-
                 dir('backend') {
                     sh '''
-                    # Download and install uv
-                    curl -LsSf https://astral.sh/uv/install.sh | sh
-
-                    # Add uv to PATH
-                    export PATH="/home/jenkins/.local/bin:$PATH"
-
                     uv sync
                     uv run pytest --cov=src tests/
                     '''

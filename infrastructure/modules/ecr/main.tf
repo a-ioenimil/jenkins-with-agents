@@ -1,6 +1,7 @@
 resource "aws_ecr_repository" "app_repo" {
   name                 = "${var.project_name}-${var.environment}"
   image_tag_mutability = "MUTABLE"
+  force_delete         = true
 
   encryption_configuration {
     encryption_type = "AES256"
@@ -90,6 +91,7 @@ resource "aws_ecr_repository_policy" "jenkins_access" {
 resource "aws_ecr_repository" "jenkins_agent_repo" {
   name                 = "jenkins-ssh-agent-custom"
   image_tag_mutability = "MUTABLE"
+  force_delete         = true
 
   encryption_configuration {
     encryption_type = "AES256"

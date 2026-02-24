@@ -43,7 +43,7 @@ sleep 10
 # Install Docker CLI and plugins (buildx, compose) via official apt repository
 docker exec jenkins-agent bash -c "\
   for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do apt-get remove -y \$pkg; done && \
-  apt-get update && apt-get install -y ca-certificates curl gnupg && \
+  apt-get update && apt-get install -y ca-certificates curl gnupg unzip && \
   install -m 0755 -d /etc/apt/keyrings && \
   curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
   chmod a+r /etc/apt/keyrings/docker.gpg && \

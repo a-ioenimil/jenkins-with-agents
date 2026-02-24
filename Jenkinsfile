@@ -23,6 +23,9 @@ pipeline {
             steps {
                 dir('backend') {
                     sh '''
+                    # Install curl on-the-fly to bypass the user_data.sh race condition
+                    apt-get update && apt-get install -y curl
+                    
                     # Download and install uv to the jenkins user's home directory
                     curl -LsSf https://astral.sh/uv/install.sh | sh
                     

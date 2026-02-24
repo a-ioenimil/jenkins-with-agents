@@ -21,4 +21,5 @@ yum install git -y
 
 # 5. Log completion
 echo "App host ready at $(date)" >> /var/log/app-host-init.log
+echo "Docker, AWS CLI, and git installed successfully." >> /var/log/app-host-init.log
 

@@ -22,6 +22,7 @@ resource "aws_instance" "app_host" {
   key_name                    = var.key_pair_name
   iam_instance_profile        = var.instance_profile_name
   user_data                   = file("${path.module}/user_data.sh")
+  user_data_replace_on_change = true
 
   root_block_device {
     volume_type = "gp3"

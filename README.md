@@ -67,6 +67,20 @@ The environment uses Terraform for end-to-to-end Infrastructure-as-Code delivery
     ```
     *Note: Retain the output variables provided upon successful apply, as you will need the EC2 Fleet ID and instance IPs for Jenkins configuration and testing.*
 
+## Build Custom Jenkins Agent Image
+
+After the infrastructure is provisioned, you must build and push the custom Jenkins agent Docker image so that the Spot instances can use it.
+
+1.  Navigate to the custom image directory (from the project root):
+    ```bash
+    cd custom-docker-ssh-agent-with-deps
+    ```
+2.  Run the build and push script:
+    ```bash
+    ./build-and-push.sh
+    ```
+    *Note: Ensure your AWS CLI is configured and authenticated before running the script so it can push the image to ECR.*
+
 ## Configuring Jenkins
 
 Before running the pipeline, you must configure Jenkins to utilize the new infrastructure:

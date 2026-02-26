@@ -5,7 +5,6 @@ resource "aws_lb" "app_alb" {
   security_groups    = [var.alb_sg_id]
   subnets            = var.public_subnet_ids
 
-  # TODO: set true in prod
   enable_deletion_protection = false
 
   tags = {

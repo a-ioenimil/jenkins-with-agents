@@ -36,3 +36,18 @@ resource "aws_instance" "jenkins_controller" {
     Role        = "jenkins-controller"
   }
 }
+
+resource "aws_eip" "jenkins_eip" {
+  domain = "vpc"
+
+  tags = {
+    Name        = "${var.project_name}-${var.environment}-jenkins-eip"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+resource "aws_eip_association" "jenkins_eip_assoc" {
+  instance_id   = aws_instance.jenkins_controller.id
+  allocation_id = aws_eip.jenkins_eip.id
+}

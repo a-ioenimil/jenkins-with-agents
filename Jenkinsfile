@@ -40,7 +40,6 @@ pipeline {
 
         stage('Push Image to ECR') {
             steps {
-                // The IAM Role on the Jenkins agent handles permissions, we just need to authenticate docker
                 sh '''
                 aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
                 docker push ${IMAGE_NAME}
@@ -52,7 +51,6 @@ pipeline {
         stage('Deploy to App Host') {
             steps {
                 script {
-                    // Look up the private IP of the App Host using the AWS CLI and tags
                     env.APP_HOST_IP = sh(
                         script: """
                         aws ec2 describe-instances \\
@@ -71,9 +69,6 @@ pipeline {
                     }
                 }
 
-                // Deploy via SSH
-                // NOTE: You must create a Jenkins Credential of type "SSH Username with private key"
-                // with ID 'app-host-ssh-key', using the user 'ec2-user' and the private key of 'whoami-service-dev-key'.
                 sshagent(['app-host-ssh-key']) {
                     // Transfer the deploy script from ci-scripts
                     sh "scp -o StrictHostKeyChecking=no ci-scripts/deploy.sh ec2-user@${APP_HOST_IP}:/home/ec2-user/deploy.sh"
